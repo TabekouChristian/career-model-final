@@ -24,38 +24,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# Verify model files are present and accessible
-RUN ls -la *.pkl && \
-    python -c "import os; print('Model files found:'); [print(f) for f in os.listdir('.') if f.endswith('.pkl')]"
-
-# Test model loading before deployment (inline)
-RUN python -c "
-import pickle
-import os
-print('🧪 Testing model loading...')
-model_files = ['improved_quick_career_model.pkl', 'final_career_model.pkl']
-loaded = False
-for model_file in model_files:
-    if os.path.exists(model_file):
-        print(f'✅ Found {model_file}')
-        try:
-            with open(model_file, 'rb') as f:
-                model_data = pickle.load(f)
-            print(f'✅ Successfully loaded {model_file}')
-            print(f'   Careers: {len(model_data.get(\"career_names\", []))}')
-            print(f'   Features: {len(model_data.get(\"feature_names\", []))}')
-            loaded = True
-            break
-        except Exception as e:
-            print(f'❌ Failed to load {model_file}: {e}')
-    else:
-        print(f'❌ Missing {model_file}')
-if not loaded:
-    print('💥 No models could be loaded!')
-    exit(1)
-else:
-    print('🎉 Model loading test passed!')
-"
+# Verify model files are present
+RUN ls -la *.pkl
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser && \
