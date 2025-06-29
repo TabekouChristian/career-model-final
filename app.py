@@ -1188,16 +1188,21 @@ def health():
         'timestamp': datetime.now().isoformat()
     })
 
+# Load model when module is imported (for Gunicorn)
+print("🚀 Initializing AI Career Model API")
+if not load_model():
+    print("⚠️ Model failed to load on startup")
+
 if __name__ == '__main__':
     print("🚀 Starting Career Recommendation Backend")
     print("=" * 50)
-    
-    # Load the model
-    if load_model():
+
+    if model_data:
         print("✅ Backend ready!")
         print("🌐 Test URL: http://localhost:5000/test")
         print("📡 API URL: http://localhost:5000/predict")
-        
-        app.run(debug=True, host='0.0.0.0', port=5000)
+
+        port = int(os.environ.get('PORT', 5000))
+        app.run(debug=False, host='0.0.0.0', port=port)
     else:
         print("❌ Failed to start - model not loaded")
